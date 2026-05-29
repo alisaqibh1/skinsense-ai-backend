@@ -1,0 +1,10 @@
+groq
+python-dotenv
+torch
+torchvision
+transformers
+
+fastapi
+uvicorn
+python-multipart
+pillow
