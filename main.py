@@ -194,6 +194,15 @@ async def predict(file: UploadFile = File(...)):
             disease_name = model.config.id2label[predicted_class_idx]
             confidence = round(confidence_score * 100, 1)
             
+            # Get top 5 predictions
+            top5_prob, top5_idx = torch.topk(probabilities[0], k=min(5, len(probabilities[0])))
+            top_predictions = []
+            for prob, idx in zip(top5_prob, top5_idx):
+                top_predictions.append({
+                    "disease": model.config.id2label[idx.item()],
+                    "confidence": round(prob.item() * 100, 2)
+                })
+            
         else:
             # Fallback to demo mode if model not loaded
             print("⚠️ Local model not available, using demo mode")
@@ -215,6 +224,7 @@ async def predict(file: UploadFile = File(...)):
             confidence = round(selected['score'] * 100, 1)
         
         print(f"✓ Prediction: {disease_name} ({confidence}%)")
+        print(f"✓ Top 5 predictions: {top_predictions if model is not None else 'N/A'}")
         
         # Get AI-powered medical advice
         print(f"🤖 Generating medical advice using Groq AI...")
@@ -223,6 +233,7 @@ async def predict(file: UploadFile = File(...)):
         return {
             "disease": disease_name,
             "confidence": confidence,
+            "top_predictions": top_predictions if model is not None else [],
             "advice": advice,
             "status": "success",
             "mode": "local_model" if model is not None else "demo"
