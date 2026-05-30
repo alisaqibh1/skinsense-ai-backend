@@ -12,8 +12,6 @@ COPY --chown=user requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install huggingface_hub
-
 COPY --chown=user download_model.py .
 
 RUN python download_model.py
