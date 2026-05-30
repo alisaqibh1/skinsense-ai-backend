@@ -14,7 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN pip install huggingface_hub
 
-RUN python -c "import os\nfrom huggingface_hub import hf_hub_download\nimport shutil\ntoken = os.environ.get('HF_TOKEN')\nfiles = ['pytorch_model.bin', 'config.json', 'preprocessor_config.json']\nfor f in files:\n    path = hf_hub_download(repo_id='alisaqib14/skin-disease-model', filename=f, repo_type='model', token=token)\n    shutil.copy(path, f'./{f}')\n    print(f'Downloaded: {f}')"
+COPY --chown=user download_model.py .
+
+RUN python download_model.py
 
 COPY --chown=user . /app
 
